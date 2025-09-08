@@ -35,7 +35,9 @@ class ApplicationConfiguration {
             )
 }
 
-class SpringDocWorkaround : RuntimeHintsRegistrar {
+
+
+class SpringDocWorkaround1 : RuntimeHintsRegistrar {
     override fun registerHints(
         hints: RuntimeHints,
         classLoader: ClassLoader?,
@@ -46,3 +48,22 @@ class SpringDocWorkaround : RuntimeHintsRegistrar {
         )
     }
 }
+
+class SpringDocWorkaround2 : RuntimeHintsRegistrar {
+    override fun registerHints(
+        hints: RuntimeHints,
+        cl: ClassLoader?,
+    ) {
+        hints.reflection().registerType(
+            AttoTransaction::class.java,
+            MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+            MemberCategory.INVOKE_PUBLIC_METHODS,
+        )
+
+        hints.reflection().registerType(
+            TypeReference.of("cash.atto.commons.AttoTransaction[]"),
+            MemberCategory.UNSAFE_ALLOCATED,
+        )
+    }
+}
+
