@@ -1,0 +1,6 @@
+ARG BASE_IMAGE_TAG=latest
+FROM ghcr.io/attocash/account-monitor:${BASE_IMAGE_TAG}
+
+LABEL org.opencontainers.image.source https://github.com/attocash/account-monitor
+
+ENV SPRING_PROFILES_ACTIVE=release,json

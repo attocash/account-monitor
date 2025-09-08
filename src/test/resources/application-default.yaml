@@ -1,0 +1,19 @@
+spring:
+  r2dbc:
+    url:
+    username:
+    password:
+  flyway:
+    url:
+    user:
+    password:
+
+atto:
+  network: LOCAL
+  node:
+    base-url:
+
+logging:
+  level:
+    cash.atto: DEBUG
+    org.springframework.boot.autoconfigure: INFO

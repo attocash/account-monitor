@@ -1,0 +1,40 @@
+spring:
+  application.name: atto-account-monitor
+  main.banner-mode: off
+  threads:
+    virtual:
+      enabled: true
+  r2dbc:
+    url: r2dbc:mysql://${ATTO_DB_HOST:localhost}:${ATTO_DB_PORT:3306}/${ATTO_DB_NAME:atto}
+    username: ${ATTO_DB_USER:root}
+    password: ${ATTO_DB_PASSWORD:}
+  flyway:
+    url: jdbc:mysql://${ATTO_DB_HOST:localhost}:${ATTO_DB_PORT:3306}/${ATTO_DB_NAME:atto}
+    user: ${ATTO_DB_USER:root}
+    password: ${ATTO_DB_PASSWORD:}
+
+atto:
+  network: ${NETWORK}
+  node:
+    base-url: ${NODE_BASE_URL}
+
+springdoc:
+  swagger-ui:
+    path: /
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health,metrics,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
