@@ -1,5 +1,6 @@
 package cash.atto.monitor
 
+import cash.atto.commons.AttoTransaction
 import io.swagger.v3.oas.models.ExternalDocumentation
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportRuntimeHints
 import org.springframework.scheduling.annotation.EnableScheduling
 
-@ImportRuntimeHints(SpringDocWorkaround::class)
+@ImportRuntimeHints(SpringDocWorkaround1::class, SpringDocWorkaround2::class)
 @Configuration
 @EnableScheduling
 class ApplicationConfiguration {
@@ -34,8 +35,6 @@ class ApplicationConfiguration {
                     .url("https://atto.cash/docs/integration"),
             )
 }
-
-
 
 class SpringDocWorkaround1 : RuntimeHintsRegistrar {
     override fun registerHints(
@@ -66,4 +65,3 @@ class SpringDocWorkaround2 : RuntimeHintsRegistrar {
         )
     }
 }
-
