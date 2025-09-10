@@ -20,6 +20,8 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import org.springframework.context.annotation.DependsOn
 import org.springframework.context.event.EventListener
@@ -37,7 +39,7 @@ class ReceivableService(
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private val receivableMap = ConcurrentHashMap<AttoHash, AttoReceivable>()
+    private val receivableStateMap = ConcurrentHashMap<AttoHash, ReceivableState>()
 
     @EventListener
     fun process(transactionSaved: TransactionSaved) {
@@ -45,7 +47,12 @@ class ReceivableService(
         if (block !is ReceiveSupport) {
             return
         }
-        receivableMap.remove(block.sendHash)
+        receivableStateMap.compute(block.sendHash) { _, state ->
+            when (state) {
+                is ReceivableState.Pending -> null
+                else -> ReceivableState.Received(block.sendHash, Clock.System.now())
+            }
+        }
     }
 
     @PostConstruct
@@ -60,13 +67,17 @@ class ReceivableService(
                             if (addresses.isEmpty()) {
                                 return@flatMapLatest emptyFlow()
                             }
-                            receivableMap.clear()
                             return@flatMapLatest nodeClient.receivableStream(addresses.toList())
                         }.onStart { logger.info { "Started listening receivables" } }
                         .onCompletion { logger.info { "Stopped listening receivables" } }
                         .collect { receivable ->
                             logger.debug { "Updating $receivable" }
-                            receivableMap[receivable.hash] = receivable
+                            receivableStateMap.compute(receivable.hash) { _, state ->
+                                when (state) {
+                                    is ReceivableState.Received -> null
+                                    else -> ReceivableState.Pending(receivable)
+                                }
+                            }
                             logger.info { "Updated $receivable" }
                         }
                 } catch (e: Exception) {
@@ -77,14 +88,28 @@ class ReceivableService(
         }
     }
 
-    fun getReceivables(): Collection<AttoReceivable> = receivableMap.values
+    fun getReceivables(): Collection<AttoReceivable> =
+        receivableStateMap.values
+            .filterIsInstance<ReceivableState.Pending>()
+            .map { it.receivable }
+            .sortedBy { it.amount }
 
     override fun clear() {
-        receivableMap.clear()
+        receivableStateMap.clear()
     }
 
     @PreDestroy
     fun close() {
         scope.cancel()
+    }
+
+    private sealed interface ReceivableState {
+        val hash: AttoHash
+
+        data class Received(override val hash: AttoHash, val instant: Instant) : ReceivableState
+        data class Pending(val receivable: AttoReceivable) : ReceivableState {
+            override val hash: AttoHash
+                get() = receivable.hash
+        }
     }
 }
