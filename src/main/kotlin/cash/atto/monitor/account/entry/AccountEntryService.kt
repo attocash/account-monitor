@@ -57,7 +57,7 @@ class AccountEntryService(
                                 addresses
                                     .filter { !knownAddresses.contains(AttoAddress(it.algorithm, it.publicKey)) }
                                     .map {
-                                        PublicKeyHeightView(it.algorithm, it.publicKey, 1UL.toAttoHeight())
+                                        PublicKeyHeightView(it.algorithm, it.publicKey, 0UL.toAttoHeight())
                                     }
 
                             return@flatMapLatest nodeClient.accountEntryStream((latestHeights + unknownHeights).toHeightSearch())
