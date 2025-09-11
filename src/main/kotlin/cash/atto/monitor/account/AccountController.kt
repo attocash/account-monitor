@@ -34,7 +34,6 @@ import java.math.BigDecimal
 class AccountController(
     private val accountService: AccountService,
     private val accountRepository: AccountRepository,
-    private val nodeOperations: AttoNodeOperations,
 ) {
     @PostMapping("/accounts/{address}")
     @Operation(
