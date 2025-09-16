@@ -1,5 +1,7 @@
 package cash.atto.monitor.receivable
 
+import cash.atto.commons.AttoAddress
+import cash.atto.commons.AttoAmount
 import cash.atto.commons.AttoHash
 import cash.atto.commons.AttoReceivable
 import io.swagger.v3.oas.annotations.Operation
@@ -32,10 +34,15 @@ class ReceivableController(
     )
     fun getAll(
         @RequestParam(required = false) limit: Int = Int.MAX_VALUE,
-        @RequestParam(required = false) hashes: Set<AttoHash> = emptySet()
+        @RequestParam(required = false) hashes: Set<AttoHash> = emptySet(),
+        @RequestParam(required = false) addresses: Set<AttoAddress> = emptySet(),
+        @RequestParam(required = false) minAmount: AttoAmount?,
     ): Collection<AttoReceivable> {
         return receivableService.getReceivables()
             .filter { hashes.isEmpty() || hashes.contains(it.hash) }
+            .filter { addresses.isEmpty() || addresses.contains(it.receiverAddress) }
+            .filter { minAmount == null || it.amount >= minAmount }
             .take(limit)
+            .toList()
     }
 }
