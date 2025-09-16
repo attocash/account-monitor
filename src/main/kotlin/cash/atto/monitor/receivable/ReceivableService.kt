@@ -1,7 +1,9 @@
 package cash.atto.monitor.receivable
 
+import cash.atto.commons.AttoAmount
 import cash.atto.commons.AttoHash
 import cash.atto.commons.AttoReceivable
+import cash.atto.commons.AttoUnit
 import cash.atto.commons.ReceiveSupport
 import cash.atto.commons.node.AttoNodeOperations
 import cash.atto.monitor.CacheSupport
@@ -34,6 +36,7 @@ import kotlin.time.Duration.Companion.seconds
 class ReceivableService(
     private val accountService: AccountService,
     private val nodeClient: AttoNodeOperations,
+    private val properties: ReceivableProperties,
 ) : CacheSupport {
     private val logger = KotlinLogging.logger {}
 
@@ -88,11 +91,14 @@ class ReceivableService(
         }
     }
 
-    fun getReceivables(): Collection<AttoReceivable> =
-        receivableStateMap.values
+    fun getReceivables(): Collection<AttoReceivable> {
+        val minAmount = AttoAmount.from(AttoUnit.ATTO, properties.minAmount)
+        return receivableStateMap.values
             .filterIsInstance<ReceivableState.Pending>()
             .map { it.receivable }
+            .filter { it.amount >= minAmount }
             .sortedBy { it.amount }
+    }
 
     override fun clear() {
         receivableStateMap.clear()
