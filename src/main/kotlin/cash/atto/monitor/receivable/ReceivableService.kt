@@ -92,7 +92,7 @@ class ReceivableService(
     }
 
     fun getReceivables(): Sequence<AttoReceivable> {
-        val minAmount = AttoAmount.from(AttoUnit.ATTO, properties.minAmount)
+        val minAmount = AttoAmount.from(AttoUnit.RAW, properties.minAmount)
         return receivableStateMap.values.asSequence()
             .filterIsInstance<ReceivableState.Pending>()
             .map { it.receivable }

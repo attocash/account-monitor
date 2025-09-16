@@ -18,7 +18,7 @@ atto:
   node:
     base-url: ${NODE_BASE_URL}
   receivable:
-    min-amount: ${RECEIVABLE_MIN_AMOUNT:0}
+    min-amount: ${RECEIVABLE_MIN_AMOUNT:1}
 
 springdoc:
   swagger-ui:
