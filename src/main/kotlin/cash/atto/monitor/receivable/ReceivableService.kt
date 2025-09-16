@@ -97,7 +97,7 @@ class ReceivableService(
             .filterIsInstance<ReceivableState.Pending>()
             .map { it.receivable }
             .filter { it.amount >= minAmount }
-            .sortedBy { it.amount }
+            .sortedByDescending { it.amount }
     }
 
     override fun clear() {
