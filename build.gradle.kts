@@ -24,7 +24,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+        url = uri("https://central.sonatype.com/repository/maven-snapshots/")
     }
 }
 
@@ -32,7 +32,7 @@ ext["kotlin-coroutines.version"] = "1.9.0"
 ext["kotlin-serialization.version"] = "1.8.0"
 
 dependencies {
-    val commonsVersion = "5.2.2"
+    val commonsVersion = "5.3.0"
     val cucumberVersion = "7.23.0"
     val springdocVersion = "2.8.9"
 

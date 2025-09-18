@@ -44,6 +44,8 @@ class ReceivableService(
 
     private val receivableStateMap = ConcurrentHashMap<AttoHash, ReceivableState>()
 
+    val minAmount = AttoAmount.from(AttoUnit.RAW, properties.minAmount)
+
     @EventListener
     fun process(transactionSaved: TransactionSaved) {
         val block = transactionSaved.transaction.block
@@ -67,13 +69,13 @@ class ReceivableService(
                     accountService
                         .streamActiveAddressUpdates()
                         .flatMapLatest { addresses ->
+                            receivableStateMap.clear()
+
                             if (addresses.isEmpty()) {
                                 return@flatMapLatest emptyFlow()
                             }
 
-                            receivableStateMap.clear()
-
-                            return@flatMapLatest nodeClient.receivableStream(addresses.toList())
+                            return@flatMapLatest nodeClient.receivableStream(addresses.toList(), minAmount)
                         }.onStart { logger.info { "Started listening receivables" } }
                         .onCompletion { logger.info { "Stopped listening receivables" } }
                         .collect { receivable ->
@@ -95,11 +97,9 @@ class ReceivableService(
     }
 
     fun getReceivables(): Sequence<AttoReceivable> {
-        val minAmount = AttoAmount.from(AttoUnit.RAW, properties.minAmount)
         return receivableStateMap.values.asSequence()
             .filterIsInstance<ReceivableState.Pending>()
             .map { it.receivable }
-            .filter { it.amount >= minAmount }
             .sortedByDescending { it.amount }
     }
 
