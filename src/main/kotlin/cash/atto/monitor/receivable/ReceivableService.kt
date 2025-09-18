@@ -70,6 +70,9 @@ class ReceivableService(
                             if (addresses.isEmpty()) {
                                 return@flatMapLatest emptyFlow()
                             }
+
+                            receivableStateMap.clear()
+
                             return@flatMapLatest nodeClient.receivableStream(addresses.toList())
                         }.onStart { logger.info { "Started listening receivables" } }
                         .onCompletion { logger.info { "Stopped listening receivables" } }
