@@ -100,7 +100,6 @@ class ReceivableService(
         return receivableStateMap.values.asSequence()
             .filterIsInstance<ReceivableState.Pending>()
             .map { it.receivable }
-            .sortedByDescending { it.amount }
     }
 
     override fun clear() {

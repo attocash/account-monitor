@@ -37,12 +37,22 @@ class ReceivableController(
         @RequestParam(required = false) hashes: Set<AttoHash> = emptySet(),
         @RequestParam(required = false) addresses: Set<AttoAddress> = emptySet(),
         @RequestParam(required = false) minAmount: AttoAmount?,
+        @RequestParam(required = false) sortedWith: SortWith = SortWith.AMOUNT_DESC,
     ): Collection<AttoReceivable> {
         return receivableService.getReceivables()
             .filter { hashes.isEmpty() || hashes.contains(it.hash) }
             .filter { addresses.isEmpty() || addresses.contains(it.receiverAddress) }
             .filter { minAmount == null || it.amount >= minAmount }
             .take(limit)
+            .sortedWith(sortedWith.comparator)
             .toList()
+    }
+
+
+    enum class SortWith(val comparator: Comparator<AttoReceivable>) {
+        AMOUNT_ASC( compareBy({ it.amount }) ),
+        AMOUNT_DESC( compareByDescending { it.amount } ),
+        TIME_ASC( compareBy({ it.timestamp }) ),
+        TIME_DESC( compareByDescending { it.timestamp } ),
     }
 }
