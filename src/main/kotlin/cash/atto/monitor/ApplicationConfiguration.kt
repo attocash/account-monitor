@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.ImportRuntimeHints
 import org.springframework.scheduling.annotation.EnableScheduling
 
-@ImportRuntimeHints(SpringDocWorkaround1::class, SpringDocWorkaround2::class)
+@ImportRuntimeHints(SpringDocWorkaround1::class, SpringDocWorkaround2::class, SpringDocWorkaround3::class)
 @Configuration
 @EnableScheduling
 class ApplicationConfiguration {
@@ -62,6 +62,39 @@ class SpringDocWorkaround2 : RuntimeHintsRegistrar {
         hints.reflection().registerType(
             TypeReference.of("cash.atto.commons.AttoTransaction[]"),
             MemberCategory.UNSAFE_ALLOCATED,
+        )
+    }
+}
+
+class SpringDocWorkaround3 : RuntimeHintsRegistrar {
+    override fun registerHints(hints: RuntimeHints, cl: ClassLoader?) {
+        hints.reflection().registerType(
+            TypeReference.of("cash.atto.commons.AttoVersion"),
+            MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS,
+            MemberCategory.INVOKE_PUBLIC_METHODS,
+            MemberCategory.DECLARED_FIELDS,
+            MemberCategory.PUBLIC_FIELDS
+        )
+        hints.reflection().registerType(
+            TypeReference.of("cash.atto.commons.AttoVersion[]"),
+            MemberCategory.UNSAFE_ALLOCATED
+        )
+
+        hints.reflection().registerType(
+            TypeReference.of("kotlin.UShort"),
+            MemberCategory.INVOKE_DECLARED_METHODS,
+            MemberCategory.INVOKE_PUBLIC_METHODS,
+            MemberCategory.DECLARED_FIELDS,
+            MemberCategory.PUBLIC_FIELDS
+        )
+        hints.reflection().registerType(
+            TypeReference.of("kotlin.UShort[]"),
+            MemberCategory.UNSAFE_ALLOCATED
+        )
+        hints.reflection().registerType(
+            TypeReference.of("kotlin.UShort\$Companion"),
+            MemberCategory.INVOKE_DECLARED_METHODS,
+            MemberCategory.INVOKE_PUBLIC_METHODS
         )
     }
 }
