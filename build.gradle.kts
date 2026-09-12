@@ -6,7 +6,7 @@ plugins {
     kotlin("plugin.spring") version kotlinVersion
     kotlin("plugin.jpa") version kotlinVersion
 
-    id("org.springframework.boot") version "3.5.7"
+    id("org.springframework.boot") version "4.0.6"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.graalvm.buildtools.native") version "1.1.1"
     id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
@@ -34,7 +34,8 @@ ext["kotlin-serialization.version"] = "1.8.0"
 dependencies {
     val commonsVersion = "5.4.1"
     val cucumberVersion = "7.23.0"
-    val springdocVersion = "2.8.14"
+    val springdocVersion = "3.0.3"
+    val testcontainersVersion = "2.0.5"
 
     implementation("cash.atto:commons-node-remote:$commonsVersion")
     testImplementation("cash.atto:commons-node-test:$commonsVersion")
@@ -54,7 +55,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
 
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
-    implementation("org.flywaydb:flyway-core")
+    implementation("org.springframework.boot:spring-boot-starter-flyway")
 
     implementation("io.asyncer:r2dbc-mysql:1.4.1")
     implementation("com.mysql:mysql-connector-j")
@@ -83,11 +84,11 @@ dependencies {
     testImplementation("io.cucumber:cucumber-junit-platform-engine:$cucumberVersion")
     testImplementation("org.awaitility:awaitility:4.3.0")
 
-    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation(platform("org.testcontainers:testcontainers-bom:$testcontainersVersion"))
+    testImplementation("org.testcontainers:testcontainers-junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-testcontainers")
-    testImplementation("org.testcontainers:mysql")
-    testImplementation("org.testcontainers:r2dbc")
-    testImplementation("org.testcontainers:testcontainers")
+    testImplementation("org.testcontainers:testcontainers-mysql")
+    testImplementation("org.testcontainers:testcontainers-r2dbc")
     implementation(kotlin("test"))
 }
 
