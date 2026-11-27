@@ -26,6 +26,7 @@ class ReceivableController(
     @GetMapping("/accounts/receivables")
     @Operation(
         summary = "Get all receivables",
+        description = "Returns the first matching receivables in the requested sort order.",
         responses = [
             ApiResponse(
                 responseCode = "200",
@@ -43,8 +44,8 @@ class ReceivableController(
             .filter { hashes.isEmpty() || hashes.contains(it.hash) }
             .filter { addresses.isEmpty() || addresses.contains(it.receiverAddress) }
             .filter { minAmount == null || it.amount >= minAmount }
-            .take(limit)
             .sortedWith(sortedWith.comparator)
+            .take(limit)
             .toList()
     }
 
